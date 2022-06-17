@@ -17,7 +17,7 @@ namespace Test.xUnit.HttpClients
         }
 
         [Fact]
-        public void HttpRequestMessageHandler_ShouldWorkCorrectly_Async()
+        public void HttpRequestMessageHandler_ShouldWorkCorrectly_Sync()
         {
             // Act
             var result = _fixture.HttpClient.Send(new HttpRequestMessage

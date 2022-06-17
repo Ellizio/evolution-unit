@@ -6,6 +6,11 @@ namespace Test.xUnit.Mappers
 {
     internal class CompactClientComparer : IEqualityComparer<CompactClient>, IDisposable
     {
+        public CompactClientComparer()
+        {
+            Debug.WriteLine("CompactClientComparer: ctor fired");
+        }
+
         public bool Equals(CompactClient? x, CompactClient? y)
         {
             return x.Id == y.Id
