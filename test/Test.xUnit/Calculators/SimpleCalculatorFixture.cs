@@ -11,7 +11,7 @@ namespace Test.xUnit.Calculators
         {
             Debug.WriteLine("SimpleCalculatorFixture: ctor fired");
 
-            Calculator = new SimpleCalculator();
+            Calculator = new();
         }
 
         public void Dispose()

@@ -24,6 +24,7 @@ namespace Test.xUnit.HttpClients
 
             // Assert
             result.RequestMessage!.Headers.Should().ContainKey("TEST"); // FluentAssetions
+
             Assert.Contains("TEST",
                 result.RequestMessage.Headers.ToDictionary(h => h.Key, h => h.Value) as IDictionary<string, IEnumerable<string>>); // xUnit Assert
         }

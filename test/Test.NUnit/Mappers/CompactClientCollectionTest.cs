@@ -1,14 +1,25 @@
 ﻿using Application.Mappers;
 using Application.Models;
-using FluentAssertions;
+using Shouldly;
+using System.Diagnostics;
 
-namespace Test.xUnit.Mappers
+namespace Test.NUnit.Mappers
 {
-    public class CompactClientCollectionFactTest
+    internal class CompactClientCollectionTest
     {
-        private readonly CompactClientMapper _mapper = new();
+        private CompactClientMapper _mapper;
+        private CompactClientComparer _comparer;
 
-        [Fact]
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            Debug.WriteLine($"{nameof(CompactClientCollectionTest)}: OneTimeSetUp fired");
+
+            _mapper = new();
+            _comparer = new();
+        }
+
+        [Test]
         public void CompactClientMapper_ShouldWorkCorrectly_InRightOrder()
         {
             // Arrange
@@ -70,14 +81,17 @@ namespace Test.xUnit.Mappers
                 result.Add(_mapper.Map(client));
 
             // Assert
-            // Does not require comparer
-            result.Should().BeEquivalentTo(output); // FluentAssertions
+            // Without comparer
+            result.ShouldBeEquivalentTo(output); // Shouldly
+            // With comparer
+            result.ShouldBe(output, _comparer); // Shouldly
 
-            // Requires comparer
-            Assert.Equal(output, result, new CompactClientComparer()); // xUnit Assert
+            // Needs to override CompactClient Equals method
+            CollectionAssert.AreEquivalent(output, result); // NUnit Assert
+            CollectionAssert.AreEqual(output, result); // NUnit Assert
         }
 
-        [Fact]
+        [Test]
         public void CompactClientMapper_ShouldWorkCorrectly_InWrongOrder()
         {
             // Arrange
@@ -139,12 +153,25 @@ namespace Test.xUnit.Mappers
                 result.Add(_mapper.Map(client));
 
             // Assert
-            // Does not require comparer
-            result.Should().BeEquivalentTo(output); // FluentAssertions
+            // ShouldBeEquivalentTo include sequences
+            result.ShouldBeEquivalentTo(output); // Shouldly
+            // With comparer and ignore order
+            result.ShouldBe(output, _comparer, true); // Shouldly
 
-            // Requires comparer
-            // Fails because sequences are different
-            Assert.Equal(output, result, new CompactClientComparer()); // xUnit Assert
+            // Needs to override CompactClient Equals method
+            // AreEquivalent excludes sequences
+            CollectionAssert.AreEquivalent(output, result);
+            // AreEqual includes sequences
+            CollectionAssert.AreEqual(output, result);
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            Debug.WriteLine($"{nameof(CompactClientCollectionTest)}: OneTimeTearDown fired");
+
+            _mapper.Dispose();
+            _comparer.Dispose();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Test.xUnit.HttpClients
             Debug.WriteLine("HttpMessageHandlerMockFactory: Create fired");
 
             var mock = new Mock<HttpMessageHandler>();
+
             mock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync<HttpRequestMessage, CancellationToken, HttpMessageHandler, HttpResponseMessage>(
@@ -24,6 +25,7 @@ namespace Test.xUnit.HttpClients
                         };
                     }
                 );
+
             mock.Protected()
                 .Setup<HttpResponseMessage>("Send", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .Returns<HttpRequestMessage, CancellationToken>(

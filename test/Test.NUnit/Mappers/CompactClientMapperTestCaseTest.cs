@@ -1,36 +1,47 @@
 ﻿using Application.Mappers;
 using Application.Models;
-using FluentAssertions;
+using Shouldly;
 using System.Diagnostics;
 
-namespace Test.xUnit.Mappers
+namespace Test.NUnit.Mappers
 {
-    public class CompactClientMapperTheoryTest : IDisposable
+    internal class CompactClientMapperTestCaseTest
     {
-        private readonly CompactClientMapper _mapper;
-        private readonly CompactClientComparer _comparer;
+        private CompactClientMapper _mapper;
+        private CompactClientComparer _comparer;
 
-        public CompactClientMapperTheoryTest()
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
-            Debug.WriteLine($"CompactClientMapperTheoryTest: ctor fired");
+            Debug.WriteLine($"{nameof(CompactClientMapperTestCaseTest)}: OneTimeSetUp fired");
 
             _mapper = new();
             _comparer = new();
         }
 
-        [Theory]
-        [MemberData(nameof(GetTestData))]
-        public void CompactClientMapper_ShouldWorkCorrectly(Client client, CompactClient expectedCompactClient)
+        [TestCaseSource(nameof(GetTestData))]
+        public void CompactClientMapper_ShouldWorkCorrectly(Client client, CompactClient expectedResult)
         {
             // Act
             var result = _mapper.Map(client);
 
             // Assert
-            // Does not require comparer
-            result.Should().BeEquivalentTo(expectedCompactClient); // FluentAssertions
+            // Without comparer
+            result.ShouldBeEquivalentTo(expectedResult); // Shouldly
+            // With comparer
+            result.ShouldBe(expectedResult, _comparer); // Shouldly
 
-            // Requires comparer
-            Assert.Equal(result, expectedCompactClient, _comparer); // xUnit Assert
+            // Needs to override CompactClient Equals method
+            Assert.That(result, Is.EqualTo(expectedResult)); // NUnit Assert
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            Debug.WriteLine($"{nameof(CompactClientMapperTestCaseTest)}: OneTimeTearDown fired");
+
+            _mapper.Dispose();
+            _comparer.Dispose();
         }
 
         public static List<object[]> GetTestData()
@@ -93,14 +104,6 @@ namespace Test.xUnit.Mappers
                     }
                 },
             };
-        }
-
-        public void Dispose()
-        {
-            Debug.WriteLine("CompactClientMapperTheoryTest: Dispose fired");
-
-            _mapper.Dispose();
-            _comparer.Dispose();
         }
     }
 }
