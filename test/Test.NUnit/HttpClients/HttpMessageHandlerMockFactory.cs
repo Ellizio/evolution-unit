@@ -16,7 +16,7 @@ namespace Test.NUnit.HttpClients
                 .Where(f => f.Method.Name == "SendAsync")
                 .WithReturnType<Task<HttpResponseMessage>>()
                 .ReturnsLazily<HttpResponseMessage, HttpRequestMessage, CancellationToken>(
-                (request, cancellationRoken) =>
+                (request, cancellationToken) =>
                 {
                     return new HttpResponseMessage
                     {
@@ -29,7 +29,7 @@ namespace Test.NUnit.HttpClients
                 .Where(f => f.Method.Name == "Send")
                 .WithReturnType<HttpResponseMessage>()
                 .ReturnsLazily<HttpResponseMessage, HttpRequestMessage, CancellationToken>(
-                (request, cancellationRoken) =>
+                (request, cancellationToken) =>
                 {
                     return new HttpResponseMessage
                     {
